@@ -68,22 +68,22 @@ def main():
     tab1, tab2, tab3 = st.tabs(["Pre Test", "Balance de Muestra", "Análisis Post Test"])
 
     with tab1:
-        st.header('Pre Test')
+        st.header('Pre Test: Coming soon')
         
-        baseline_rate = st.slider('Tasa de conversión de la Versión A (baseline):', min_value=0.01, max_value=0.5, value=0.05)
-        min_detectable_effect = st.slider('Diferencia mínima detectable:', min_value=0.001, max_value=0.1, value=0.01)
-        alpha = st.slider('Nivel de significancia (alfa):', min_value=0.01, max_value=0.1, value=0.05)
-        power = st.slider('Poder estadístico deseado:', min_value=0.5, max_value=0.99, value=0.8)
-        visits_per_day = st.number_input('Visitas por día:', min_value=100, value=500)
+        # baseline_rate = st.slider('Tasa de conversión de la Versión A (baseline):', min_value=0.01, max_value=0.5, value=0.05)
+        # min_detectable_effect = st.slider('Diferencia mínima detectable:', min_value=0.001, max_value=0.1, value=0.01)
+        # alpha = st.slider('Nivel de significancia (alfa):', min_value=0.01, max_value=0.1, value=0.05)
+        # power = st.slider('Poder estadístico deseado:', min_value=0.5, max_value=0.99, value=0.8)
+        # visits_per_day = st.number_input('Visitas por día:', min_value=100, value=500)
         
-        if st.button('Calcular tamaño de muestra y días necesarios'):
-            # Cálculo del tamaño de la muestra
-            sample_size = calculate_sample_size(baseline_rate, min_detectable_effect, alpha, power)
-            st.write(f'Tamaño de muestra necesario por grupo: {sample_size}')
+        # if st.button('Calcular tamaño de muestra y días necesarios'):
+        #     # Cálculo del tamaño de la muestra
+        #     sample_size = calculate_sample_size(baseline_rate, min_detectable_effect, alpha, power)
+        #     st.write(f'Tamaño de muestra necesario por grupo: {sample_size}')
             
-            # Cálculo de los días necesarios
-            days_needed = calculate_days(visits_per_day, sample_size)
-            st.write(f'Días necesarios para correr el experimento: {days_needed} días')
+        #     # Cálculo de los días necesarios
+        #     days_needed = calculate_days(visits_per_day, sample_size)
+        #     st.write(f'Días necesarios para correr el experimento: {days_needed} días')
 
     with tab2:
         st.header('Balance de la Muestra')
