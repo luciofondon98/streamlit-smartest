@@ -7,7 +7,9 @@ import matplotlib.pyplot as plt
 # https://chatgpt.com/share/42690081-d654-4562-a808-903c8d372af6
 
 # Función para calcular el tamaño de la muestra
-def calculate_sample_size(baseline_rate, min_detectable_effect, alpha=0.05, power=0.8):
+def calculate_sample_size(baseline_rate, desired_percent_increase, alpha=0.05, power=0.8):
+    desired_conversion_rate = baseline_rate * desired_percent_increase + baseline_rate
+    min_detectable_effect = desired_conversion_rate - baseline_rate
     effect_size = proportion_effectsize(baseline_rate, baseline_rate + min_detectable_effect)
     analysis = NormalIndPower()
     sample_size = analysis.solve_power(effect_size=effect_size, power=power, alpha=alpha, ratio=1)
@@ -68,18 +70,30 @@ def main():
     tab1, tab2, tab3 = st.tabs(["Pre Test", "Balance de Muestra", "Análisis Post Test"])
 
     with tab1:
-        st.header('Pre Test')
+        st.header('Developing')
         
         baseline_rate = st.slider('Tasa de conversión de la Versión A (baseline):', min_value=0.01, max_value=0.5, value=0.05)
-        min_detectable_effect = st.slider('Diferencia mínima detectable:', min_value=0.001, max_value=0.1, value=0.01)
+        desired_percent_increase = st.slider(
+                'Mínimo porcentaje de incremento deseable:',
+                min_value=1,   # 1% en lugar de 0.01
+                max_value=100, # 100% en lugar de 1.0
+                value=5,       # 5% en lugar de 0.05
+                step=1,        # Paso de 1%
+                format="%d%%"  # Formato de porcentaje
+        )
+        # min_detectable_effect = st.slider('Diferencia mínima detectable:', min_value=0.001, max_value=0.1, value=0.01)
         alpha = st.slider('Nivel de significancia (alfa):', min_value=0.01, max_value=0.1, value=0.05)
         power = st.slider('Poder estadístico deseado:', min_value=0.5, max_value=0.99, value=0.8)
         visits_per_day = st.number_input('Visitas por día:', min_value=100, value=500)
         
+        
         if st.button('Calcular tamaño de muestra y días necesarios'):
             # Cálculo del tamaño de la muestra
-            sample_size = calculate_sample_size(baseline_rate, min_detectable_effect, alpha, power)
-            st.write(f'Tamaño de muestra necesario por grupo: {sample_size}')
+            # sample_size = calculate_sample_size(baseline_rate, min_detectable_effect, alpha, power)
+            desired_conversion_rate = baseline_rate * desired_percent_increase + baseline_rate
+        
+            sample_size = calculate_sample_size(baseline_rate, desired_percent_increase/100.0, alpha, power)
+            st.write(f'Para lograr un aumento de conversión del {desired_percent_increase :.0f}%, se necesita un tamaño de muestra necesario por variante de: {sample_size}')
             
             # Cálculo de los días necesarios
             days_needed = calculate_days(visits_per_day, sample_size)
