@@ -95,9 +95,9 @@ def main():
             sample_size = calculate_sample_size(baseline_rate, desired_percent_increase/100.0, alpha, power)
             st.write(f'Para lograr un aumento de conversión del {desired_percent_increase :.0f}%, se necesita un tamaño de muestra necesario por variante de: {sample_size}')
             
-            # Cálculo de los días necesarios
-            days_needed = calculate_days(visits_per_day, sample_size)
-            st.write(f'Días necesarios para correr el experimento: {days_needed} días')
+        #     # Cálculo de los días necesarios
+        #     days_needed = calculate_days(visits_per_day, sample_size)
+        #     st.write(f'Días necesarios para correr el experimento: {days_needed} días')
 
     with tab2:
         st.header('Balance de la Muestra')
