@@ -168,30 +168,29 @@ def main():
             st.write(f'Probabilidad de que la Versión A sea mejor que la Versión B: {prob_A_better_than_B:.2f}')
             st.write(f'Probabilidad de que la Versión B sea mejor que la Versión A: {prob_B_better_than_A:.2f}')
             
+    # Tab Prueba ANOVA Varias Variantes
     with tab4:
         st.header('Prueba ANOVA para Varias Variantes')
-        num_variants = st.number_input('Número de variantes:', min_value=2, max_value=10, value=3)
 
-        visits_per_variant = []
-        conversion_rates = []
+        num_variants = st.number_input('Número de variantes (incluyendo la versión A):', min_value=2, max_value=10, value=3)
 
+        variants = []
         for i in range(num_variants):
-            visits = st.number_input(f'Número de visitas para la Variante {i+1}:', min_value=100, value=1000, key=f"visits_variant_{i}")
-            rate = st.slider(f'Tasa de conversión de la Variante {i+1}:', min_value=0.01, max_value=0.5, value=0.05, key=f"rate_variant_{i}")
-            visits_per_variant.append(visits)
-            conversion_rates.append(rate)
+            visits = st.number_input(f'Número de visitas en la Variante {i+1}:', min_value=100, value=1000, key=f"visits_variant_{i}")
+            conversions = st.number_input(f'Número de conversiones en la Variante {i+1}:', min_value=0, value=50, key=f"conversions_variant_{i}")
+            variants.append({'visits': visits, 'conversions': conversions})
 
         alpha_anova = st.slider('Nivel de significancia (alfa):', min_value=0.01, max_value=0.1, value=0.05, key="alpha_anova")
 
-        if st.button('Realizar ANOVA'):
-            f_stat, p_value = analyze_anova(conversion_rates, visits_per_variant)
+        if st.button('Analizar Test ANOVA'):
+            f_stat, p_value = analyze_anova(variants, alpha_anova)
             st.write(f'Estadístico F: {f_stat:.4f}')
             st.write(f'P-Valor: {p_value:.4f}')
-
+            
             if p_value < alpha_anova:
-                st.success('El resultado es estadísticamente significativo. Se puede concluir que hay una diferencia entre las variantes.')
+                st.success('El resultado es estadísticamente significativo. Hay una diferencia entre las variantes.')
             else:
-                st.warning('El resultado no es estadísticamente significativo. No se puede concluir que hay una diferencia entre las variantes.')
+                st.warning('El resultado no es estadísticamente significativo. No hay suficiente evidencia para concluir que hay una diferencia entre las variantes.')
 
     
 if __name__ == '__main__':
