@@ -6,6 +6,13 @@ import streamlit as st
 import matplotlib.pyplot as plt
 # https://chatgpt.com/share/42690081-d654-4562-a808-903c8d372af6
 
+# Función para realizar ANOVA
+def analyze_anova(conversion_rates, visits_per_variant):
+    total_conversions = [np.random.binomial(visits, rate) for visits, rate in zip(visits_per_variant, conversion_rates)]
+    # Aplicar ANOVA
+    f_stat, p_value = stats.f_oneway(*[np.random.beta(c+1, v-c+1, 10000) for c, v in zip(total_conversions, visits_per_variant)])
+    return f_stat, p_value
+
 # Función para calcular el tamaño de la muestra
 def calculate_sample_size(baseline_rate, desired_percent_increase, alpha=0.05, power=0.8):
     desired_conversion_rate = baseline_rate * desired_percent_increase + baseline_rate
@@ -63,11 +70,12 @@ def calculate_days(visits_per_day, sample_size):
     days = sample_size / visits_per_day
     return int(np.ceil(days))
 
+
 # Aplicación Streamlit
 def main():
     st.title('SMARTest 2.0')
 
-    tab1, tab2, tab3 = st.tabs(["Pre Test", "Balance de Muestra", "Análisis Post Test"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Pre Test", "Balance de Muestra", "Análisis Post Test", "Análisis Multivariante (ANOVA)"])
 
     with tab1:
         st.header('Developing')
@@ -159,6 +167,32 @@ def main():
             prob_B_better_than_A = np.mean(posterior_B > posterior_A)
             st.write(f'Probabilidad de que la Versión A sea mejor que la Versión B: {prob_A_better_than_B:.2f}')
             st.write(f'Probabilidad de que la Versión B sea mejor que la Versión A: {prob_B_better_than_A:.2f}')
+            
+    with tab4:
+        st.header('Prueba ANOVA para Varias Variantes')
+        num_variants = st.number_input('Número de variantes:', min_value=2, max_value=10, value=3)
+
+        visits_per_variant = []
+        conversion_rates = []
+
+        for i in range(num_variants):
+            visits = st.number_input(f'Número de visitas para la Variante {i+1}:', min_value=100, value=1000, key=f"visits_variant_{i}")
+            rate = st.slider(f'Tasa de conversión de la Variante {i+1}:', min_value=0.01, max_value=0.5, value=0.05, key=f"rate_variant_{i}")
+            visits_per_variant.append(visits)
+            conversion_rates.append(rate)
+
+        alpha_anova = st.slider('Nivel de significancia (alfa):', min_value=0.01, max_value=0.1, value=0.05, key="alpha_anova")
+
+        if st.button('Realizar ANOVA'):
+            f_stat, p_value = analyze_anova(conversion_rates, visits_per_variant)
+            st.write(f'Estadístico F: {f_stat:.4f}')
+            st.write(f'P-Valor: {p_value:.4f}')
+
+            if p_value < alpha_anova:
+                st.success('El resultado es estadísticamente significativo. Se puede concluir que hay una diferencia entre las variantes.')
+            else:
+                st.warning('El resultado no es estadísticamente significativo. No se puede concluir que hay una diferencia entre las variantes.')
+
     
 if __name__ == '__main__':
     main()
